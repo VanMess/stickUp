@@ -24,6 +24,10 @@ jQuery(function($) {
         top: 0,
         marginTop: 0,
         marginBottom: 0,
+        beforeStick: null,
+        afterStick: null,
+        beforeUnstick: null,
+        afterUnstick: null,
         onScroll: function(scrollDir, varscroll) {
             var contentView = null,
                 testView = null,
@@ -65,7 +69,9 @@ jQuery(function($) {
 
             // 固定菜单栏目，使之固定（fixed）
             if (_me.top < varscroll + _me.marginTop) {
+                if ( !! _me.beforeStick) _me.beforeStick.call(_me);
                 _me.jqDom.addClass('isStuck');
+                if ( !! _me.afterStick) _me.afterStick.call(_me);
                 _me.jqDom.next().closest('div').css({
                     'margin-top': _me.height + _me.marginBottom + _me.parentMarginTop + 'px'
                 }, 10);
@@ -77,7 +83,9 @@ jQuery(function($) {
 
             // 菜單欄目，使之不固定（relative）
             if (varscroll + _me.marginTop < _me.top) {
+                if ( !! _me.beforeUnstick) _me.beforeUnstick.call(_me);
                 _me.jqDom.removeClass('isStuck');
+                if ( !! _me.afterUnstick) _me.afterUnstick.call(_me);
                 _me.jqDom.next().closest('div').css({
                     'margin-top': _me.parentMarginTop + 'px'
                 }, 10);
