@@ -1,10 +1,11 @@
-// 问题：不支持一个页面中多个元素固定
+// 问题：不支持一个页面中多个元素固定（已实现）
 //		 不支持固定方向的设置
-//		 不支持回调事件
-//		 单页模式下，调整的定位是基于part参数的
-//		 可以考虑使用data-标签的形式
+//		 不支持回调事件（已实现）
+//		 单页模式下，调整的定位是基于part参数的（重构后是基于html元素的data-menu）
 //		 目前而言，许多操作是实时的——比如每次都重新查找、计算DOM
 // 		 这种方法对网页变动比较大的情景是非常适用的，但比较耗费性能
+//
+//		 目前为止，缺乏测试
 jQuery(function($) {
     "use strict";
 
@@ -18,7 +19,7 @@ jQuery(function($) {
         itemHover: '',
         jqDom: null,
         menuItems: [],
-        region: '',
+        region: 'top',
         height: 0,
         parentMarginTop: 0,
         top: 0,
@@ -128,6 +129,7 @@ jQuery(function($) {
         }
 
         _me.dataProperty = option.dataProperty || _me.dataProperty;
+        _me.region = option.region || _me.region;
         _me.height = parseInt(_me.jqDom.height());
         _me.marginBottom = parseInt(_me.jqDom.css('margin-bottom'));
         _me.parentMarginTop = parseInt(_me.jqDom.next().closest('div').css('margin-top'));
