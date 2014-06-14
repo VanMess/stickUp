@@ -10,7 +10,6 @@ jQuery(function($) {
             scrollDir = '',
             itemClass = '',
             itemHover = '',
-            menuSize = null,
             stickyHeight = 0,
             stickyMarginB = 0,
             currentMarginT = 0,
@@ -61,7 +60,6 @@ jQuery(function($) {
                 } else {
                     topMargin = 0;
                 }
-                menuSize = $('.' + itemClass).size();
             }
             stickyHeight = parseInt($(this).height());
             stickyMarginB = parseInt($(this).css('margin-bottom'));
@@ -75,8 +73,8 @@ jQuery(function($) {
             varscroll = parseInt($(document).scrollTop());
 
             // 计算并给适当元素添加 itemHover 类
-            if ( !! menuSize) {
-                for (var i = 0; i < menuSize; i++) {
+            if ( !! content && content.length > 0) {
+                for (var i = 0; i < content.length; i++) {
                     contentTop[i] = $('#' + content[i] + '').offset().top;
 
                     // 之前這裡定義了一個bottomView
