@@ -1,18 +1,25 @@
+// 问题：不支持一个页面中多个元素固定
+//		 不支持固定方向的设置
+//		 不支持回调事件
+//		 单页模式下，调整的定位是基于part参数的
+//		 可以考虑使用data-标签的形式
+//		 目前而言，许多操作是实时的——比如每次都重新查找、计算DOM
+// 		 这种方法对网页变动比较大的情景是非常适用的，但比较耗费性能
 jQuery(function($) {
     "use strict";
 
     var Context = function() {},
-        _ctxList = {};
+        _ctxList = {},
+        lastScrollTop = 0;
     Context.prototype = {
+        dataProperty: 'data-menu',
         selector: '',
         itemClass: '',
         itemHover: '',
-        content: [],
-        contentTop: [],
         jqDom: null,
         menuItems: [],
-        height: 0,
         region: '',
+        height: 0,
         parentMarginTop: 0,
         top: 0,
         marginTop: 0,
@@ -23,29 +30,34 @@ jQuery(function($) {
                 _me = this;
 
             // 计算并给适当元素添加 itemHover 类
-            if ( !! _me.content && _me.content.length > 0) {
-                var offset = null;
-                for (var i = 0; i < _me.content.length; i++) {
-                    offset = $('#' + _me.content[i] + '').offset();
-                    _me.contentTop[i] = !! offset ? offset.top : 0;
+            if ( !! _me.menuItems && _me.menuItems.length > 0) {
+                var offset = null,
+                    contentTop = 0,
+                    tmp_menuTarget = null;
+                for (var i = 0; i < _me.menuItems.length; i++) {
+                    tmp_menuTarget = $('#' + $(_me.menuItems[i]).attr(_me.dataProperty));
+                    offset = tmp_menuTarget.offset();
+                    contentTop = !! offset ? offset.top : 0;
 
                     // 之前這裡定義了一個bottomView
                     // 会在每次执行这个地方的时候都去创建一个函数
                     // 实际上是很没必要的性能损耗，所以这里将代码移动下面
-                    if (scrollDir == 'down' && varscroll > _me.contentTop[i] - 50 && varscroll < _me.contentTop[i] + 50) {
-                        $('.' + _me.itemClass).removeClass(_me.itemHover);
-                        $('.' + _me.itemClass + ':eq(' + i + ')').addClass(_me.itemHover);
+                    if (scrollDir == 'down' &&
+                        varscroll > contentTop - 50 &&
+                        varscroll < contentTop + 50) {
+                        _me.jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
+                        _me.jqDom.find('.' + _me.itemClass + ':eq(' + i + ')').addClass(_me.itemHover);
                     }
                     if (scrollDir == 'up') {
                         // 这里就是原来的bottomView代码
-                        contentView = $('#' + _me.content[i] + '').height() * .4;
-                        testView = _me.contentTop[i] - contentView;
+                        contentView = tmp_menuTarget.height() * 0.4;
+                        testView = contentTop - contentView;
                         if (varscroll > testView) {
-                            $('.' + _me.itemClass).removeClass(_me.itemHover);
-                            $('.' + _me.itemClass + ':eq(' + i + ')').addClass(_me.itemHover);
+                            _me.jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
+                            _me.jqDom.find('.' + _me.itemClass + ':eq(' + i + ')').addClass(_me.itemHover);
                         } else if (varscroll < 50) {
-                            $('.' + _me.itemClass).removeClass(_me.itemHover);
-                            $('.' + _me.itemClass + ':eq(0)').addClass(_me.itemHover);
+                            _me.jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
+                            _me.jqDom.find('.' + _me.itemClass + ':eq(0)').addClass(_me.itemHover);
                         }
                     }
                 }
@@ -60,9 +72,7 @@ jQuery(function($) {
                 _me.jqDom.css("position", "fixed");
                 _me.jqDom.css({
                     top: '0px'
-                }, 10, function() {
-
-                });
+                }, 10);
             };
 
             // 菜單欄目，使之不固定（relative）
@@ -75,29 +85,18 @@ jQuery(function($) {
             };
         }
     };
-    Context._init_ = function(option, dom, instance) {
+    Context._init_ = function(dom, option, instance) {
         instance = instance || new Context();
 
         var _me = instance,
-            objn = 0;
+            objn = 0,
+            menuItems = null;
         _me.jqDom = $(dom);
-        // adding a class to users div
-        _me.jqDom.addClass('stuckMenu');
 
         //getting options
-        if (option != null) {
-            for (var o in option.parts) {
-                if (option.parts.hasOwnProperty(o)) {
-                    _me.content[objn] = option.parts[objn];
-                    objn++;
-                }
-            }
-            if (objn == 0) {
-                console.log('warm:needs arguments');
-            }
+        if ( !! option) {
+            _me.menuItems = _me.jqDom.find('[' + _me.dataProperty + ']');
 
-            _me.itemClass = option.itemClass;
-            _me.itemHover = option.itemHover;
             if (option.topMargin != null) {
                 if (option.topMargin == 'auto') {
                     _me.marginTop = parseInt(_me.jqDom.css('margin-top'));
@@ -114,7 +113,13 @@ jQuery(function($) {
             } else {
                 _me.marginTop = 0;
             }
+            _me.itemClass = option.itemClass;
+            _me.itemHover = option.itemHover;
+        } else {
+            console.log('warm:needs arguments');
         }
+
+        _me.dataProperty = option.dataProperty || _me.dataProperty;
         _me.height = parseInt(_me.jqDom.height());
         _me.marginBottom = parseInt(_me.jqDom.css('margin-bottom'));
         _me.parentMarginTop = parseInt(_me.jqDom.next().closest('div').css('margin-top'));
@@ -123,36 +128,20 @@ jQuery(function($) {
         _ctxList[_me.selector] = _me;
     };
 
-    // 问题：不支持一个页面中多个元素固定
-    //		 不支持固定方向的设置
-    //		 不支持回调事件
-    $(document).ready(function() {
-        var lastScrollTop = 0,
-            scrollDir = 'down';
+    // 初始化各类参数，即解析options的值
+    $.fn.stickUp = function(options) {
+        if (!_ctxList[this.selector])
+            Context._init_(this, options);
+    }
 
-        $(window).scroll(function(event) {
-            var st = $(this).scrollTop();
-            if (st > lastScrollTop) {
-                scrollDir = 'down';
-            } else {
-                scrollDir = 'up';
-            }
-            lastScrollTop = st;
-        });
+    // 頁面滾動事件
+    $(document).on('scroll', function() {
+        var scrollOffest = parseInt($(document).scrollTop()),
+            scrollDir = scrollOffest > lastScrollTop ? 'down' : 'up';
 
-        // 初始化各类参数，即解析options的值
-        $.fn.stickUp = function(options) {
-            if (!_ctxList[this.selector])
-                Context._init_(options, this);
+        for (var i in _ctxList) {
+            _ctxList[i].onScroll(scrollDir, scrollOffest);
         }
-
-        // 頁面滾動事件
-        $(document).on('scroll', function() {
-            var scrollOffest = parseInt($(document).scrollTop());
-            for (var i in _ctxList) {
-                _ctxList[i].onScroll(scrollDir, scrollOffest);
-            }
-        });
+        lastScrollTop = scrollOffest;
     });
-
 });

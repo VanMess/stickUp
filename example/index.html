@@ -50,21 +50,21 @@
                             </div>
                             <div class="navbar-collapse collapse">
                                 <ul class="nav navbar-nav">
-                                    <li class="menuItem active"><a href="#home">Home</a>
+                                    <li class="menuItem active" data-menu="home"><a href="#home">Home</a>
                                     </li>
-                                    <li class="menuItem"><a href="#features">Features</a>
+                                    <li class="menuItem" data-menu="features"><a href="#features">Features</a>
                                     </li>
-                                    <li class="menuItem"><a href="#updates">Updates</a>
+                                    <li class="menuItem" data-menu="updates"><a href="#updates">Updates</a>
                                     </li>
-                                    <li class="menuItem"><a href="#installation">Installation</a>
+                                    <li class="menuItem" data-menu="installation"><a href="#installation">Installation</a>
                                     </li>
-                                    <li class="menuItem"><a href="#one-pager">One Pager</a>
+                                    <li class="menuItem" data-menu="one-pager"><a href="#one-pager">One Pager</a>
                                     </li>
-                                    <li class="menuItem"><a href="#extras">Extras</a>
+                                    <li class="menuItem" data-menu="extras"><a href="#extras">Extras</a>
                                     </li>
-                                    <li class="menuItem"><a href="#wordpress">Wordpress</a>
+                                    <li class="menuItem" data-menu="wordpress"><a href="#wordpress">Wordpress</a>
                                     </li>
-                                    <li class="menuItem"><a href="#contact">Contact</a>
+                                    <li class="menuItem" data-menu="contact"><a href="#contact">Contact</a>
                                     </li>
                                 </ul>
                             </div>
@@ -432,23 +432,11 @@
         <!-- ### IMPORTANT ### stickUp options in use -->
         <!-- ######################################## -->
         <script type="text/javascript">
-        jQuery(function($) {
-            $(document).ready(function() {
-                $('.menu1').stickUp({
-                    parts: {
-                        0: 'home',
-                        1: 'features',
-                        2: 'updates',
-                        3: 'installation',
-                        4: 'one-pager',
-                        5: 'extras2',
-                        6: 'wordpress',
-                        7: 'contact'
-                    },
-                    itemClass: 'menuItem',
-                    itemHover: 'active',
-                    topMargin: 'auto'
-                });
+        $(document).ready(function() {
+            $('.menu1').stickUp({
+                itemClass: 'menuItem',
+                itemHover: 'active',
+                topMargin: 'auto'
             });
         });
         </script>
