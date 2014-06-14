@@ -1,18 +1,21 @@
 jQuery(function($) {
-
+    // 问题：不支持一个页面中多个元素固定
+    //		 不支持固定方向的设置
+    //		 不支持回调事件
     $(document).ready(function() {
-        var contentButton = [];
-        var contentTop = [];
-        var content = [];
-        var lastScrollTop = 0;
-        var scrollDir = '';
-        var itemClass = '';
-        var itemHover = '';
-        var menuSize = null;
-        var stickyHeight = 0;
-        var stickyMarginB = 0;
-        var currentMarginT = 0;
-        var topMargin = 0;
+        var contentButton = [],
+            contentTop = [],
+            content = [],
+            lastScrollTop = 0,
+            scrollDir = '',
+            itemClass = '',
+            itemHover = '',
+            menuSize = null,
+            stickyHeight = 0,
+            stickyMarginB = 0,
+            currentMarginT = 0,
+            topMargin = 0;
+
         $(window).scroll(function(event) {
             var st = $(this).scrollTop();
             if (st > lastScrollTop) {
@@ -22,6 +25,8 @@ jQuery(function($) {
             }
             lastScrollTop = st;
         });
+
+        // 初始化各类参数，即解析options的值
         $.fn.stickUp = function(options) {
             // adding a class to users div
             $(this).addClass('stuckMenu');
@@ -64,8 +69,12 @@ jQuery(function($) {
             vartop = parseInt($(this).offset().top);
             //$(this).find('*').removeClass(itemHover);
         }
+
+        // 
         $(document).on('scroll', function() {
             varscroll = parseInt($(document).scrollTop());
+
+            // 计算并给适当元素添加 itemHover 类
             if (menuSize != null) {
                 for (var i = 0; i < menuSize; i++) {
                     contentTop[i] = $('#' + content[i] + '').offset().top;
@@ -92,8 +101,7 @@ jQuery(function($) {
                 }
             }
 
-
-
+            // 固定菜单栏目，使之固定（fixed）
             if (vartop < varscroll + topMargin) {
                 $('.stuckMenu').addClass('isStuck');
                 $('.stuckMenu').next().closest('div').css({
@@ -107,6 +115,7 @@ jQuery(function($) {
                 });
             };
 
+            // 是否菜單欄目，使之不固定（relative）
             if (varscroll + topMargin < vartop) {
                 $('.stuckMenu').removeClass('isStuck');
                 $('.stuckMenu').next().closest('div').css({
