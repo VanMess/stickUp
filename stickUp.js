@@ -70,16 +70,24 @@ jQuery(function($) {
             //$(this).find('*').removeClass(itemHover);
         }
 
-        // 
+        // 頁面滾動事件
         $(document).on('scroll', function() {
             varscroll = parseInt($(document).scrollTop());
 
             // 计算并给适当元素添加 itemHover 类
-            if (menuSize != null) {
+            if ( !! menuSize) {
                 for (var i = 0; i < menuSize; i++) {
                     contentTop[i] = $('#' + content[i] + '').offset().top;
 
-                    function bottomView(i) {
+                    // 之前這裡定義了一個bottomView
+                    // 会在每次执行这个地方的时候都去创建一个函数
+                    // 实际上是很没必要的性能损耗，所以这里将代码移动下面
+                    if (scrollDir == 'down' && varscroll > contentTop[i] - 50 && varscroll < contentTop[i] + 50) {
+                        $('.' + itemClass).removeClass(itemHover);
+                        $('.' + itemClass + ':eq(' + i + ')').addClass(itemHover);
+                    }
+                    if (scrollDir == 'up') {
+                        // 这里就是原来的bottomView代码
                         contentView = $('#' + content[i] + '').height() * .4;
                         testView = contentTop[i] - contentView;
                         //console.log(varscroll);
@@ -90,13 +98,6 @@ jQuery(function($) {
                             $('.' + itemClass).removeClass(itemHover);
                             $('.' + itemClass + ':eq(0)').addClass(itemHover);
                         }
-                    }
-                    if (scrollDir == 'down' && varscroll > contentTop[i] - 50 && varscroll < contentTop[i] + 50) {
-                        $('.' + itemClass).removeClass(itemHover);
-                        $('.' + itemClass + ':eq(' + i + ')').addClass(itemHover);
-                    }
-                    if (scrollDir == 'up') {
-                        bottomView(i);
                     }
                 }
             }
@@ -115,7 +116,7 @@ jQuery(function($) {
                 });
             };
 
-            // 是否菜單欄目，使之不固定（relative）
+            // 菜單欄目，使之不固定（relative）
             if (varscroll + topMargin < vartop) {
                 $('.stuckMenu').removeClass('isStuck');
                 $('.stuckMenu').next().closest('div').css({
