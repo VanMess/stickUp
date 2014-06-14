@@ -1,9 +1,10 @@
 jQuery(function($) {
+    "use strict";
     // 问题：不支持一个页面中多个元素固定
     //		 不支持固定方向的设置
     //		 不支持回调事件
     $(document).ready(function() {
-        var contentButton = [],
+        var contexts = {},
             contentTop = [],
             content = [],
             lastScrollTop = 0,
@@ -13,7 +14,8 @@ jQuery(function($) {
             stickyHeight = 0,
             stickyMarginB = 0,
             currentMarginT = 0,
-            topMargin = 0;
+            topMargin = 0,
+            vartop = null;
 
         $(window).scroll(function(event) {
             var st = $(this).scrollTop();
@@ -70,12 +72,16 @@ jQuery(function($) {
 
         // 頁面滾動事件
         $(document).on('scroll', function() {
-            varscroll = parseInt($(document).scrollTop());
+            var varscroll = parseInt($(document).scrollTop()),
+                contentView = null,
+                testView = null;
 
             // 计算并给适当元素添加 itemHover 类
             if ( !! content && content.length > 0) {
+                var offset = null;
                 for (var i = 0; i < content.length; i++) {
-                    contentTop[i] = $('#' + content[i] + '').offset().top;
+                    offset = $('#' + content[i] + '').offset();
+                    contentTop[i] = !! offset ? offset.top : 0;
 
                     // 之前這裡定義了一個bottomView
                     // 会在每次执行这个地方的时候都去创建一个函数
