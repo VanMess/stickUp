@@ -19,7 +19,13 @@ Please Visit the <a href="http://lirancohen.github.io/stickUp">GitHub Page</a> f
 </ul>
 <h2>调用接口如下</h2>
 <ul>
-	<li><span>dataProperty：</span>默认值：data-menu，用于标注menu-item中的</li>
-	<li>(太晚了，头昏脑涨了，明天再补充具体说明吧)</li>
+	<li><span>dataProperty：</span>默认值：data-menu，用于标注menu-item中的（此值与html结构关联，用于替代以前的parts参数）</li>
+	<li><span>itemClass: </span>标注菜单“项”，在库中通过此参数查找菜单项</li>
+	<li> <span>itemHover:　</span>单页网页中，网页滚动到菜单项指定区域时，会为该菜单项添加该类 </li>
+	<li> <span>marginTop: </span> 用于指定滚动元素到上边距 </li>
+	<li><span>beforeStick: </span> 回调函数，菜单栏固定前触发</li>
+	<li><span>afterStick: </span> 回调函数，菜单栏固定后触发</li>
+	<li><span>beforeUnstick: </span> 回调函数，菜单栏解除固定前触发</li>
+	<li><span>afterUnstick: </span> 回调函数，菜单栏解除固定后触发</li>
 </ul>
-<span>如果有任何问题，请尽快联系我；如果可能，请尽量阅读源码，不多，才140多行</span>
+<span>如果有任何问题，请尽快联系我；如果可能，请尽量阅读源码，不多，才150多行</span>

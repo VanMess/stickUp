@@ -13,34 +13,40 @@ jQuery(function($) {
         _ctxList = {},
         lastScrollTop = 0;
     Context.prototype = {
+        // 配置参数
         dataProperty: 'data-menu',
-        selector: '',
         itemClass: '',
         itemHover: '',
-        jqDom: null,
-        menuItems: [],
-        region: 'top',
-        height: 0,
-        parentMarginTop: 0,
-        top: 0,
         marginTop: 0,
-        marginBottom: 0,
         beforeStick: null,
         afterStick: null,
         beforeUnstick: null,
         afterUnstick: null,
+
+        // 预留参数
+        region: 'top',
+
+        // 自动计算值
+        // 私有参数
+        _selector: '',
+        _jqDom: null,
+        _menuItems: [],
+        _height: 0,
+        _parentMarginTop: 0,
+        _top: 0,
+        _marginBottom: 0,
         onScroll: function(scrollDir, varscroll) {
             var contentView = null,
                 testView = null,
                 _me = this;
 
             // 计算并给适当元素添加 itemHover 类
-            if ( !! _me.menuItems && _me.menuItems.length > 0) {
+            if ( !! _me._menuItems && _me._menuItems.length > 0) {
                 var offset = null,
                     contentTop = 0,
                     tmp_menuTarget = null;
-                for (var i = 0; i < _me.menuItems.length; i++) {
-                    tmp_menuTarget = $('#' + $(_me.menuItems[i]).attr(_me.dataProperty));
+                for (var i = 0; i < _me._menuItems.length; i++) {
+                    tmp_menuTarget = $('#' + $(_me._menuItems[i]).attr(_me.dataProperty));
                     offset = tmp_menuTarget.offset();
                     contentTop = !! offset ? offset.top : 0;
 
@@ -50,47 +56,47 @@ jQuery(function($) {
                     if (scrollDir == 'down' &&
                         varscroll > contentTop - 50 &&
                         varscroll < contentTop + 50) {
-                        _me.jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
-                        _me.jqDom.find('.' + _me.itemClass + ':eq(' + i + ')').addClass(_me.itemHover);
+                        _me._jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
+                        _me._jqDom.find('.' + _me.itemClass + ':eq(' + i + ')').addClass(_me.itemHover);
                     }
                     if (scrollDir == 'up') {
                         // 这里就是原来的bottomView代码
                         contentView = tmp_menuTarget.height() * 0.4;
                         testView = contentTop - contentView;
                         if (varscroll > testView) {
-                            _me.jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
-                            _me.jqDom.find('.' + _me.itemClass + ':eq(' + i + ')').addClass(_me.itemHover);
+                            _me._jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
+                            _me._jqDom.find('.' + _me.itemClass + ':eq(' + i + ')').addClass(_me.itemHover);
                         } else if (varscroll < 50) {
-                            _me.jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
-                            _me.jqDom.find('.' + _me.itemClass + ':eq(0)').addClass(_me.itemHover);
+                            _me._jqDom.find('.' + _me.itemClass).removeClass(_me.itemHover);
+                            _me._jqDom.find('.' + _me.itemClass + ':eq(0)').addClass(_me.itemHover);
                         }
                     }
                 }
             }
 
             // 固定菜单栏目，使之固定（fixed）
-            if (_me.top < varscroll + _me.marginTop) {
+            if (_me._top < varscroll + _me.marginTop) {
                 if ( !! _me.beforeStick) _me.beforeStick.call(_me);
-                _me.jqDom.addClass('isStuck');
+                _me._jqDom.addClass('isStuck');
                 if ( !! _me.afterStick) _me.afterStick.call(_me);
-                _me.jqDom.next().closest('div').css({
-                    'margin-top': _me.height + _me.marginBottom + _me.parentMarginTop + 'px'
+                _me._jqDom.next().closest('div').css({
+                    'margin-top': _me._height + _me._marginBottom + _me._parentMarginTop + 'px'
                 }, 10);
-                _me.jqDom.css("position", "fixed");
-                _me.jqDom.css({
+                _me._jqDom.css("position", "fixed");
+                _me._jqDom.css({
                     top: '0px'
                 }, 10);
             };
 
             // 菜單欄目，使之不固定（relative）
-            if (varscroll + _me.marginTop < _me.top) {
+            if (varscroll + _me.marginTop < _me._top) {
                 if ( !! _me.beforeUnstick) _me.beforeUnstick.call(_me);
-                _me.jqDom.removeClass('isStuck');
+                _me._jqDom.removeClass('isStuck');
                 if ( !! _me.afterUnstick) _me.afterUnstick.call(_me);
-                _me.jqDom.next().closest('div').css({
-                    'margin-top': _me.parentMarginTop + 'px'
+                _me._jqDom.next().closest('div').css({
+                    'margin-top': _me._parentMarginTop + 'px'
                 }, 10);
-                _me.jqDom.css("position", "relative");
+                _me._jqDom.css("position", "relative");
             };
         }
     };
@@ -98,17 +104,16 @@ jQuery(function($) {
         instance = instance || new Context();
 
         var _me = instance,
-            objn = 0,
-            menuItems = null;
-        _me.jqDom = $(dom);
+            objn = 0;
+        _me._jqDom = $(dom);
 
         //getting options
         if ( !! option) {
-            _me.menuItems = _me.jqDom.find('[' + _me.dataProperty + ']');
+            _me._menuItems = _me._jqDom.find('[' + _me.dataProperty + ']');
 
             if (option.topMargin != null) {
                 if (option.topMargin == 'auto') {
-                    _me.marginTop = parseInt(_me.jqDom.css('margin-top'));
+                    _me.marginTop = parseInt(_me._jqDom.css('margin-top'));
                 } else {
                     if (isNaN(option.topMargin) && option.topMargin.search("px") > 0) {
                         _me.marginTop = parseInt(option.topMargin.replace("px", ""));
@@ -130,12 +135,12 @@ jQuery(function($) {
 
         _me.dataProperty = option.dataProperty || _me.dataProperty;
         _me.region = option.region || _me.region;
-        _me.height = parseInt(_me.jqDom.height());
-        _me.marginBottom = parseInt(_me.jqDom.css('margin-bottom'));
-        _me.parentMarginTop = parseInt(_me.jqDom.next().closest('div').css('margin-top'));
-        _me.top = parseInt(_me.jqDom.offset().top);
+        _me._height = parseInt(_me._jqDom.height());
+        _me._marginBottom = parseInt(_me._jqDom.css('margin-bottom'));
+        _me._parentMarginTop = parseInt(_me._jqDom.next().closest('div').css('margin-top'));
+        _me._top = parseInt(_me._jqDom.offset().top);
 
-        _ctxList[_me.selector] = _me;
+        _ctxList[_me._selector] = _me;
     };
 
     // 初始化各类参数，即解析options的值
